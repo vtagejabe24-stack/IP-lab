@@ -1,0 +1,20 @@
+import cv2
+
+img = cv2.imread("image.jpg", cv2.IMREAD_GRAYSCALE)
+
+width = int(input("Enter border width in pixels: "))
+
+color = int(input("Enter border color (0-255): "))
+
+bordered = cv2.copyMakeBorder(
+    img,
+    width, width, width, width,
+    cv2.BORDER_CONSTANT,
+    value=color
+)
+
+cv2.imshow("Original Grayscale Image", img)
+cv2.imshow("Image with Border", bordered)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
