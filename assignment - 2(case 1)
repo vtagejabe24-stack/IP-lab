@@ -1,0 +1,14 @@
+import cv2
+import numpy as np
+
+img = cv2.imread("image.jpg")
+
+B, G, R = cv2.split(img)
+
+gray = ((R.astype(float) + G.astype(float) + B.astype(float)) / 3).astype(np.uint8)
+
+cv2.imshow("Original RGB Image", img)
+cv2.imshow("Grayscale Image - Mean Average", gray)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
