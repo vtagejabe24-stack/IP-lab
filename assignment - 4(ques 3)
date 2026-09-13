@@ -1,0 +1,33 @@
+import cv2
+import numpy as np
+
+img = cv2.imread("image.jpg", cv2.IMREAD_GRAYSCALE)
+
+r_min = int(input("Enter input lower intensity: "))
+r_max = int(input("Enter input upper intensity: "))
+
+s_min = int(input("Enter output lower intensity: "))
+s_max = int(input("Enter output upper intensity: "))
+
+if r_min >= r_max:
+    print("Invalid input range.")
+
+elif s_min < 0 or s_max > 255 or s_min >= s_max:
+    print("Invalid output range.")
+
+else:
+    
+    r = img.astype(float)
+
+    stretched = ((r - r_min) * (s_max - s_min) /
+                 (r_max - r_min)) + s_min
+
+    stretched = np.clip(stretched, 0, 255)
+
+    stretched = stretched.astype(np.uint8)
+
+    cv2.imshow("Original Image", img)
+    cv2.imshow("Contrast Stretched Image", stretched)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
