@@ -1,0 +1,18 @@
+import cv2
+import numpy as np
+
+img = cv2.imread("image.jpg", cv2.IMREAD_GRAYSCALE)
+
+r = img.astype(float)
+
+log_image = np.log1p(r)
+
+log_image = cv2.normalize(log_image, None, 0, 255, cv2.NORM_MINMAX)
+
+log_image = log_image.astype(np.uint8)
+
+cv2.imshow("Original Image", img)
+cv2.imshow("Log Transformed Image", log_image)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
