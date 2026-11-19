@@ -1,0 +1,135 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+def get_padding_type():
+    print("\nChoose padding method:")
+    print("1. Zero Padding")
+    print("2. Replication Padding")
+
+    choice = int(input("Enter your choice: "))
+
+    if choice == 1:
+        return cv2.BORDER_CONSTANT
+    elif choice == 2:
+        return cv2.BORDER_REPLICATE
+    else:
+        print("Invalid choice. Using Zero Padding.")
+        return cv2.BORDER_CONSTANT
+
+def averaging_filter(size):
+    kernel = np.ones((size, size), dtype=np.float32)
+    kernel = kernel / (size * size)
+
+    return kernel
+
+def weighted_filter(size):
+
+    k = size // 2
+
+    kernel = np.zeros((size, size), dtype=np.float32)
+
+    for i in range(-k, k + 1):
+        for j in range(-k, k + 1):
+            kernel[i + k][j + k] = max(abs(i), abs(j))
+
+    total = np.sum(kernel)
+
+    if total != 0:
+        kernel = kernel / total
+
+    return kernel
+
+def gaussian_filter(size, sigma):
+
+    k = size // 2
+
+    kernel = np.zeros((size, size), dtype=np.float32)
+
+    for i in range(-k, k + 1):
+        for j in range(-k, k + 1):
+
+            value = np.exp(-(i * i + j * j) / (2 * sigma * sigma))
+
+            kernel[i + k][j + k] = value
+
+    kernel = kernel / np.sum(kernel)
+
+    return kernel
+
+image = cv2.imread("input.jpg", cv2.IMREAD_GRAYSCALE)
+
+if image is None:
+    print("Error: Image not found!")
+    exit()
+
+size = int(input("Enter filter size (odd number, e.g. 3 or 5): "))
+
+if size % 2 == 0:
+    print("Filter size must be odd.")
+    exit()
+
+padding_type = get_padding_type()
+
+sigma = float(input("Enter sigma for Gaussian filter: "))
+
+avg_kernel = averaging_filter(size)
+
+weighted_kernel = weighted_filter(size)
+
+gaussian_kernel = gaussian_filter(size, sigma)
+
+average_result = cv2.filter2D(
+    image,
+    -1,
+    avg_kernel,
+    borderType=padding_type
+)
+
+weighted_result = cv2.filter2D(
+    image,
+    -1,
+    weighted_kernel,
+    borderType=padding_type
+)
+
+gaussian_result = cv2.filter2D(
+    image,
+    -1,
+    gaussian_kernel,
+    borderType=padding_type
+)
+
+print("\nAveraging Filter:")
+print(avg_kernel)
+
+print("\nWeighted Filter:")
+print(weighted_kernel)
+
+print("\nGaussian Filter:")
+print(gaussian_kernel)
+
+plt.figure(figsize=(12, 8))
+
+plt.subplot(2, 2, 1)
+plt.imshow(image, cmap="gray")
+plt.title("Original Image")
+plt.axis("off")
+
+plt.subplot(2, 2, 2)
+plt.imshow(average_result, cmap="gray")
+plt.title("Averaging Filter")
+plt.axis("off")
+
+plt.subplot(2, 2, 3)
+plt.imshow(weighted_result, cmap="gray")
+plt.title("Weighted Filter")
+plt.axis("off")
+
+plt.subplot(2, 2, 4)
+plt.imshow(gaussian_result, cmap="gray")
+plt.title("Gaussian Filter")
+plt.axis("off")
+
+plt.tight_layout()
+plt.show()
